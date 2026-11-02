@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clan OS - Desktop</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --taskbar-bg: rgba(13, 17, 23, 0.9);
+      --panel-bg: rgba(22, 27, 34, 0.96);
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #58a6ff;
+      --accent-danger: #f85149;
+      --accent-warning: #d29922;
+      --accent-success: #3fb950;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --font: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: var(--font);
+      height: 100vh;
+      overflow: hidden;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+
+      /* WALLPAPER MINECRAFT */
+      background: linear-gradient(rgba(10, 14, 23, 0.35), rgba(10, 14, 23, 0.65)), 
+                  url('https://images.alphacoders.com/131/1316684.jpeg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    /* ÁREA DE TRABALHO */
+    #desktop {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    /* ÍCONE DA REDE SOCIAL */
+    .desktop-shortcut {
+      width: 90px;
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+      transition: all 0.2s ease;
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .desktop-shortcut:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .desktop-shortcut:active {
+      transform: scale(0.95);
+    }
+
+    .desktop-shortcut i {
+      font-size: 34px;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+    }
+
+    .desktop-shortcut span {
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,0.8);
+      line-height: 1.2;
+    }
+
+    /* MENU INICIAR */
+    #startMenu {
+      position: absolute;
+      bottom: 58px;
+      left: 14px;
+      width: 290px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 2000;
+    }
+
+    .start-user-profile {
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .avatar-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.2);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+    }
+
+    .avatar-box img {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+    }
+
+    .start-menu-items {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .menu-entry {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .menu-entry:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .menu-entry i {
+      width: 18px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .menu-separator {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 8px;
+    }
+
+    /* PAINEL DE NOTIFICAÇÕES */
+    #notifPanel {
+      position: absolute;
+      bottom: 58px;
+      right: 14px;
+      width: 340px;
+      max-height: 480px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 2000;
+    }
+
+    .notif-header {
+      padding: 12px 14px;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .notif-body {
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .notif-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .notif-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .notif-title {
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .notif-preview {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .notif-full {
+      display: none;
+      font-size: 11px;
+      color: var(--text);
+      line-height: 1.4;
+      margin-top: 6px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      padding-top: 6px;
+    }
+
+    .notif-toggle-btn {
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: bold;
+      margin-top: 4px;
+      display: inline-block;
+    }
+
+    /* BARRA DE TAREFAS INFERIOR */
+    #taskbar {
+      height: 48px;
+      background: var(--taskbar-bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      backdrop-filter: blur(16px);
+      z-index: 1000;
+    }
+
+    /* BOTÃO COM A CABEÇA DO LUCAS_KEA */
+    .skin-head-btn {
+      width: 38px;
+      height: 38px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      overflow: hidden;
+      padding: 4px;
+    }
+
+    .skin-head-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: var(--accent);
+      transform: scale(1.08);
+    }
+
+    .skin-head-btn:active {
+      transform: scale(0.92);
+    }
+
+    .skin-head-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      image-rendering: pixelated;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .system-tray {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .tray-btn {
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tray-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: var(--accent-danger);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .clock {
+      text-align: right;
+      line-height: 1.2;
+      font-family: monospace;
+      color: var(--text);
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+      #notifPanel {
+        width: calc(100vw - 20px);
+        right: 10px;
+      }
+      #startMenu {
+        width: calc(100vw - 20px);
+        left: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ÁREA DE TRABALHO -->
+  <main id="desktop">
+    <a href="social.html" class="desktop-shortcut">
+      <i class="fa-solid fa-comments" style="color: #4a9eff;"></i>
+      <span>Social Clã</span>
+    </a>
+  </main>
+
+  <!-- MENU INICIAR -->
+  <div id="startMenu">
+    <div class="start-user-profile">
+      <div class="avatar-box">
+        <img src="https://crafatar.com/avatars/lucas_kea?size=64&overlay=true" 
+             alt="lucas_kea" 
+             style="width: 100%; height: 100%; image-rendering: pixelated;" 
+             onerror="this.src='https://minotar.net/helm/lucas_kea/64.png';">
+      </div>
+      <div>
+        <div style="font-weight: 600; font-size: 13px;">lucas_kea</div>
+        <div style="font-size: 11px; color: var(--accent-success);">Online no Clã</div>
+      </div>
+    </div>
+
+    <div class="start-menu-items">
+      <div class="menu-entry" onclick="alert('Abrindo Configurações...')">
+        <i class="fa-solid fa-gear" style="color: var(--accent);"></i>
+        <span>Configurações</span>
+      </div>
+      <div class="menu-entry" onclick="alert('Volume do Chat: 100% | Alertas de Raid: Ativados')">
+        <i class="fa-solid fa-volume-high" style="color: var(--accent-warning);"></i>
+        <span>Sons & Alertas</span>
+      </div>
+      <div class="menu-entry" onclick="changeWallpaper()">
+        <i class="fa-solid fa-image" style="color: #bc8cff;"></i>
+        <span>Trocar Wallpaper</span>
+      </div>
+      <div class="menu-entry" onclick="alert('Servidor: Rede Screen\nStatus: Conectado')">
+        <i class="fa-solid fa-server" style="color: var(--accent-success);"></i>
+        <span>Status do Servidor</span>
+      </div>
+      
+      <div class="menu-separator"></div>
+
+      <div class="menu-entry" style="color: var(--accent-danger);" onclick="alert('Sessão bloqueada.')">
+        <i class="fa-solid fa-lock"></i>
+        <span>Bloquear / Sair</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAINEL DE NOTIFICAÇÕES -->
+  <div id="notifPanel">
+    <div class="notif-header">
+      <span><i class="fa-solid fa-bell"></i> Central de Avisos</span>
+      <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="toggleNotifPanel()"></i>
+    </div>
+    <div class="notif-body">
+      <div class="notif-card" onclick="toggleDetails(this)">
+        <div class="notif-title" style="color: var(--accent-danger);">
+          <i class="fa-solid fa-triangle-exclamation"></i> ALERTA VERMELHO: Raid
+        </div>
+        <div class="notif-preview">Movimentação suspeita próxima ao Posto Sul...</div>
+        <div class="notif-full">
+          Gatedores do clã rival foram avistados rondando o portal do Nether na coordenada X: 120 Z: 8900. Todos os membros online devem equipar sets de combate e evitar descarregar baús desprotegidos.
+        </div>
+        <span class="notif-toggle-btn">Ler mais ▼</span>
+      </div>
+
+      <div class="notif-card" onclick="toggleDetails(this)">
+        <div class="notif-title" style="color: var(--accent-warning);">
+          <i class="fa-solid fa-vault"></i> Clan Safe: Cobrança Semanal
+        </div>
+        <div class="notif-preview">Débito do seguro de inventário programado...</div>
+        <div class="notif-full">
+          O recolhimento automático da taxa de 5.000 moedas para cobertura contra perdas por lava ou queda acontecerá no próximo reinício do servidor às 04:00 AM.
+        </div>
+        <span class="notif-toggle-btn">Ler mais ▼</span>
+      </div>
+
+      <div class="notif-card" onclick="toggleDetails(this)">
+        <div class="notif-title" style="color: var(--accent);">
+          <i class="fa-solid fa-landmark"></i> Senado: Plebiscito Aberto
+        </div>
+        <div class="notif-preview">Nova votação para aliança comercial...</div>
+        <div class="notif-full">
+          Proposta de cessar-fogo e livre acesso mútuo à Farm de Enderman. Acesse a aba do Senado para votar.
+        </div>
+        <span class="notif-toggle-btn">Ler mais ▼</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA DE TAREFAS -->
+  <footer id="taskbar">
+    <!-- CABEÇA DA SKIN DO LUCAS_KEA -->
+    <div class="skin-head-btn" onclick="toggleStartMenu()" title="Perfil / Iniciar (lucas_kea)">
+      <img src="https://crafatar.com/avatars/lucas_kea?size=64&overlay=true" 
+           alt="lucas_kea" 
+           class="skin-head-img" 
+           onerror="this.src='https://minotar.net/helm/lucas_kea/64.png';">
+    </div>
+
+    <div class="system-tray">
+      <!-- WI-FI DINÂMICO -->
+      <div class="tray-btn" id="wifiWidget" title="Conexão com o Servidor">
+        <i id="wifiIcon" class="fa-solid fa-wifi"></i>
+        <span id="pingValue" style="font-size: 10px; font-family: monospace;">18ms</span>
+      </div>
+
+      <!-- NOTIFICAÇÕES -->
+      <div class="tray-btn" onclick="toggleNotifPanel()" title="Notificações">
+        <i class="fa-solid fa-bell"></i>
+        <div class="notif-badge"></div>
+      </div>
+
+      <!-- RELÓGIO -->
+      <div class="clock">
+        <div id="clockTime">00:00:00</div>
+        <div id="clockDate" style="font-size: 10px; color: var(--text-muted);">01/01/2026</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Relógio
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clockTime').innerText = now.toLocaleTimeString('pt-BR');
+      document.getElementById('clockDate').innerText = now.toLocaleDateString('pt-BR');
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Toggle Menu Iniciar
+    function toggleStartMenu() {
+      const menu = document.getElementById('startMenu');
+      const notif = document.getElementById('notifPanel');
+      notif.style.display = 'none';
+      menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    // Toggle Notificações
+    function toggleNotifPanel() {
+      const panel = document.getElementById('notifPanel');
+      const menu = document.getElementById('startMenu');
+      menu.style.display = 'none';
+      panel.style.display = (panel.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    // Fechar ao clicar fora
+    document.getElementById('desktop').addEventListener('click', () => {
+      document.getElementById('startMenu').style.display = 'none';
+      document.getElementById('notifPanel').style.display = 'none';
+    });
+
+    // Ler mais
+    function toggleDetails(card) {
+      const fullText = card.querySelector('.notif-full');
+      const btn = card.querySelector('.notif-toggle-btn');
+      if (fullText.style.display === 'block') {
+        fullText.style.display = 'none';
+        btn.innerText = 'Ler mais ▼';
+      } else {
+        fullText.style.display = 'block';
+        btn.innerText = 'Recolher ▲';
+      }
+    }
+
+    // Alternar Wallpaper
+    const wallpapers = [
+      'https://images.alphacoders.com/131/1316684.jpeg',
+      'https://images.alphacoders.com/134/1348122.png',
+      'https://images.alphacoders.com/115/1159392.jpg'
+    ];
+    let currentWpIndex = 0;
+
+    function changeWallpaper() {
+      currentWpIndex = (currentWpIndex + 1) % wallpapers.length;
+      document.body.style.backgroundImage = `linear-gradient(rgba(10, 14, 23, 0.35), rgba(10, 14, 23, 0.65)), url('${wallpapers[currentWpIndex]}')`;
+      document.getElementById('startMenu').style.display = 'none';
+    }
+
+    // Wi-Fi oscilando
+    function updateWifiStatus() {
+      const wifiIcon = document.getElementById('wifiIcon');
+      const pingVal = document.getElementById('pingValue');
+      const rand = Math.random();
+      let ping = Math.floor(Math.random() * 25) + 12;
+
+      if (rand > 0.85) {
+        wifiIcon.className = "fa-solid fa-wifi";
+        wifiIcon.style.color = "#d29922";
+        ping = Math.floor(Math.random() * 50) + 70;
+      } else if (rand > 0.15) {
+        wifiIcon.className = "fa-solid fa-wifi";
+        wifiIcon.style.color = "#3fb950";
+      } else {
+        wifiIcon.className = "fa-solid fa-network-wired";
+        wifiIcon.style.color = "#58a6ff";
+      }
+
+      pingVal.innerText = `${ping}ms`;
+    }
+    setInterval(updateWifiStatus, 3500);
+    updateWifiStatus();
+  </script>
+</body>
+</html>
